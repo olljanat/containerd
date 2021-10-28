@@ -34,6 +34,7 @@ import (
 	"github.com/containerd/containerd/pkg/cri/annotations"
 	customopts "github.com/containerd/containerd/pkg/cri/opts"
 	osinterface "github.com/containerd/containerd/pkg/os"
+	"github.com/containerd/containerd/pkg/userns"
 )
 
 func (c *criService) sandboxContainerSpec(id string, config *runtime.PodSandboxConfig,
@@ -138,8 +139,9 @@ func (c *criService) sandboxContainerSpec(id string, config *runtime.PodSandboxC
 	// We do not set network sysctls if network namespace is host
 	sysctls := make(map[string]string)
 	if nsOptions.GetNetwork() != runtime.NamespaceMode_NODE {
+		// We cannot set up ping socket support in a user namespace
+		if !userns.RunningInUserNS() && customopts.SysctlExists("net.ipv4.ping_group_range") {
 		// allow unprivileged ICMP echo sockets without CAP_NET_RAW
-		if customopts.SysctlExists("net.ipv4.ping_group_range") {
 			sysctls["net.ipv4.ping_group_range"] = "0 2147483647"
 		}
 
