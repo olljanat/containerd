@@ -132,8 +132,28 @@ func (c *criService) sandboxContainerSpec(id string, config *runtime.PodSandboxC
 		customopts.WithSupplementalGroups(supplementalGroups),
 	)
 
-	// Add sysctls
-	sysctls := config.GetLinux().GetSysctls()
+	// Add default sysctls that are generally safe and useful; currently we
+	// grant the capabilities to allow these anyway. You can override if
+	// you want to restore the original behaviour.
+	// We do not set network sysctls if network namespace is host
+	sysctls := make(map[string]string)
+	if nsOptions.GetNetwork() != runtime.NamespaceMode_NODE {
+		// allow unprivileged ICMP echo sockets without CAP_NET_RAW
+		if customopts.SysctlExists("net.ipv4.ping_group_range") {
+			sysctls["net.ipv4.ping_group_range"] = "0 2147483647"
+		}
+
+		// allow opening any port less than 1024 without CAP_NET_BIND_SERVICE
+		if customopts.SysctlExists("net.ipv4.ip_unprivileged_port_start") {
+			sysctls["net.ipv4.ip_unprivileged_port_start"] = "0"
+		}
+	}
+
+	// Add user definided sysctls and overwrite defaults if requested
+	userSysctls := config.GetLinux().GetSysctls()
+	for opt, value := range userSysctls {
+		sysctls[opt] = value
+	}
 	specOpts = append(specOpts, customopts.WithSysctls(sysctls))
 
 	// Note: LinuxSandboxSecurityContext does not currently provide an apparmor profile

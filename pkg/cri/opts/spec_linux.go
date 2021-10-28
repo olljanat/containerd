@@ -593,6 +593,14 @@ func WithOOMScoreAdj(config *runtime.ContainerConfig, restrict bool) oci.SpecOpt
 	}
 }
 
+// SysctlExists checks if a sysctl exists; runc will error if we add any that do not actually
+// exist, so do not add the default ones if running on an old kernel.
+func SysctlExists(s string) bool {
+	f := filepath.Join("/proc", "sys", strings.Replace(s, ".", "/", -1))
+	_, err := os.Stat(f)
+	return err == nil
+}
+
 // WithSysctls sets the provided sysctls onto the spec
 func WithSysctls(sysctls map[string]string) oci.SpecOpts {
 	return func(ctx context.Context, client oci.Client, c *containers.Container, s *runtimespec.Spec) error {
