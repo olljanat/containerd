@@ -107,6 +107,16 @@ version = 2
     # set to nil or `unconfined`, and the default used when the runtime default seccomp profile is requested.
   unset_seccomp_profile = ""
 
+  # enable_unprivileged_icmp configures net.ipv4.ping_group_range="0 2147483647"
+  # for all containers which are not using host network, are not running in user namespace
+  # and if it is not overwritten by PodSandboxConfig
+  enable_unprivileged_icmp = true
+
+  # enable_unprivileged_ports configures net.ipv4.ip_unprivileged_port_start=0
+  # for all containers which are not using host network
+  # and if it is not overwritten by PodSandboxConfig
+  enable_unprivileged_ports = true
+
   # 'plugins."io.containerd.grpc.v1.cri".containerd' contains config related to containerd
   [plugins."io.containerd.grpc.v1.cri".containerd]
 

@@ -133,29 +133,20 @@ func (c *criService) sandboxContainerSpec(id string, config *runtime.PodSandboxC
 		customopts.WithSupplementalGroups(supplementalGroups),
 	)
 
-	// Add default sysctls that are generally safe and useful; currently we
-	// grant the capabilities to allow these anyway. You can override if
-	// you want to restore the original behaviour.
-	// We do not set network sysctls if network namespace is host, or if we are
-	// joining an existing namespace, only if we create a new net namespace.
-	sysctls := make(map[string]string)
+	// Add sysctls
+	sysctls := config.GetLinux().GetSysctls()
+	if sysctls == nil {
+		sysctls = make(map[string]string)
+	}
+	_, ping_group_range := sysctls["net.ipv4.ping_group_range"]
+	_, ip_unprivileged_port_start := sysctls["net.ipv4.ip_unprivileged_port_start"]
 	if nsOptions.GetNetwork() != runtime.NamespaceMode_NODE {
-		// We cannot set up ping socket support in a user namespace
-		if !userns.RunningInUserNS() && customopts.SysctlExists("net.ipv4.ping_group_range") {
-			// allow unprivileged ICMP echo sockets without CAP_NET_RAW
+		if c.config.EnableUnprivilegedICMP && !ping_group_range && !userns.RunningInUserNS() {
 			sysctls["net.ipv4.ping_group_range"] = "0 2147483647"
 		}
-
-		// allow opening any port less than 1024 without CAP_NET_BIND_SERVICE
-		if customopts.SysctlExists("net.ipv4.ip_unprivileged_port_start") {
+		if c.config.EnableUnprivilegedPorts && !ip_unprivileged_port_start {
 			sysctls["net.ipv4.ip_unprivileged_port_start"] = "0"
 		}
-	}
-
-	// Add user definided sysctls and overwrite defaults if requested
-	userSysctls := config.GetLinux().GetSysctls()
-	for opt, value := range userSysctls {
-		sysctls[opt] = value
 	}
 	specOpts = append(specOpts, customopts.WithSysctls(sysctls))
 

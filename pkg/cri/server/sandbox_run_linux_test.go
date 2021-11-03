@@ -176,6 +176,8 @@ func TestLinuxSandboxContainerSpec(t *testing.T) {
 	} {
 		t.Logf("TestCase %q", desc)
 		c := newTestCRIService()
+		c.config.EnableUnprivilegedICMP = true
+		c.config.EnableUnprivilegedPorts = true
 		config, imageConfig, specCheck := getRunPodSandboxTestData()
 		if test.configChange != nil {
 			test.configChange(config)
