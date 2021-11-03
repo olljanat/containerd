@@ -138,13 +138,13 @@ func (c *criService) sandboxContainerSpec(id string, config *runtime.PodSandboxC
 	if sysctls == nil {
 		sysctls = make(map[string]string)
 	}
-	_, ping_group_range := sysctls["net.ipv4.ping_group_range"]
-	_, ip_unprivileged_port_start := sysctls["net.ipv4.ip_unprivileged_port_start"]
+	_, pingGroupRange := sysctls["net.ipv4.ping_group_range"]
+	_, ipUnprivilegedPortStart := sysctls["net.ipv4.ip_unprivileged_port_start"]
 	if nsOptions.GetNetwork() != runtime.NamespaceMode_NODE {
-		if c.config.EnableUnprivilegedICMP && !ping_group_range && !userns.RunningInUserNS() {
+		if c.config.EnableUnprivilegedICMP && !pingGroupRange && !userns.RunningInUserNS() {
 			sysctls["net.ipv4.ping_group_range"] = "0 2147483647"
 		}
-		if c.config.EnableUnprivilegedPorts && !ip_unprivileged_port_start {
+		if c.config.EnableUnprivilegedPorts && !ipUnprivilegedPortStart {
 			sysctls["net.ipv4.ip_unprivileged_port_start"] = "0"
 		}
 	}
