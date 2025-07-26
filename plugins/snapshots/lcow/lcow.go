@@ -468,6 +468,8 @@ func (s *snapshotter) openOrCreateScratch(ctx context.Context, sizeGB int, scrat
 
 		if err := rhcs.CreateScratchWithOpts(ctx, scratchTempPath, &opt); err != nil {
 			os.Remove(scratchTempPath)
+
+			//FixMe: runhcs.exe is called in here?
 			return nil, fmt.Errorf("failed to create '%s' temp file: %w", scratchTempName, err)
 		}
 		if err := os.Rename(scratchTempPath, scratchFinalPath); err != nil {
