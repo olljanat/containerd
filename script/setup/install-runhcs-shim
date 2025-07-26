@@ -43,3 +43,4 @@ else
 fi
 git checkout "refs/tags/${RUNHCS_VERSION}" || git checkout "refs/heads/${RUNHCS_VERSION}" || git checkout "${RUNHCS_VERSION}"
 GO111MODULE=on go build -mod=vendor -o "${DESTDIR}/containerd-shim-runhcs-v1.exe" ./cmd/containerd-shim-runhcs-v1
+GO111MODULE=on go build -mod=vendor -o "${DESTDIR}/runhcs.exe" ./cmd/runhcs
