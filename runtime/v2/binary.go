@@ -61,12 +61,7 @@ type binary struct {
 }
 
 func (b *binary) Start(ctx context.Context, opts *types.Any, onClose func()) (_ *shim, err error) {
-	args := []string{"-id", b.bundle.ID}
-	switch log.GetLevel() {
-	case log.DebugLevel, log.TraceLevel:
-		args = append(args, "-debug")
-	}
-	args = append(args, "start")
+	args := []string{"start", b.bundle.ID}
 
 	cmd, err := client.Command(
 		ctx,

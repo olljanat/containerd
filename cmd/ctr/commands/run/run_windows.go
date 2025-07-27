@@ -21,7 +21,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/Microsoft/hcsshim/cmd/containerd-shim-runhcs-v1/options"
+	// "github.com/Microsoft/hcsshim/cmd/containerd-shim-runhcs-v1/options"
+	"github.com/containerd/containerd/api/types/runc/options"
 	"github.com/containerd/console"
 	"github.com/containerd/containerd"
 	"github.com/containerd/containerd/cmd/ctr/commands"
@@ -172,9 +173,7 @@ func NewContainer(ctx gocontext.Context, client *containerd.Client, context *cli
 	runtime := context.String("runtime")
 	var runtimeOpts interface{}
 	if runtime == "io.containerd.runhcs.v1" {
-		runtimeOpts = &options.Options{
-			Debug: context.GlobalBool("debug"),
-		}
+		runtimeOpts = &options.Options{}
 	}
 	cOpts = append(cOpts, containerd.WithRuntime(runtime, runtimeOpts))
 

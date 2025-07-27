@@ -38,12 +38,11 @@ import (
 	runtimeoptions "github.com/containerd/containerd/pkg/runtimeoptions/v1"
 	"github.com/containerd/containerd/plugin"
 	"github.com/containerd/containerd/runtime/linux/runctypes"
-	"github.com/containerd/typeurl/v2"
 	docker "github.com/distribution/reference"
 	runtimespec "github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 
-	runhcsoptions "github.com/Microsoft/hcsshim/cmd/containerd-shim-runhcs-v1/options"
+	// runhcsoptions "github.com/Microsoft/hcsshim/cmd/containerd-shim-runhcs-v1/options"
 	imagedigest "github.com/opencontainers/go-digest"
 	"github.com/pelletier/go-toml"
 	runtime "k8s.io/cri-api/pkg/apis/runtime/v1"
@@ -375,7 +374,8 @@ func getRuntimeOptionsType(t string) interface{} {
 	case plugin.RuntimeLinuxV1:
 		return &runctypes.RuncOptions{}
 	case runtimeRunhcsV1:
-		return &runhcsoptions.Options{}
+		// return &runhcsoptions.Options{}
+		return &runcoptions.Options{}
 	default:
 		return &runtimeoptions.Options{}
 	}
@@ -383,14 +383,17 @@ func getRuntimeOptionsType(t string) interface{} {
 
 // getRuntimeOptions get runtime options from container metadata.
 func getRuntimeOptions(c containers.Container) (interface{}, error) {
-	from := c.Runtime.Options
-	if from == nil || from.GetValue() == nil {
-		return nil, nil
-	}
-	opts, err := typeurl.UnmarshalAny(from)
-	if err != nil {
-		return nil, err
-	}
+	/*
+		from := c.Runtime.Options
+		if from == nil || from.GetValue() == nil {
+			return nil, nil
+		}
+		opts, err := typeurl.UnmarshalAny(from)
+		if err != nil {
+			return nil, err
+		}
+	*/
+	var opts interface{}
 	return opts, nil
 }
 

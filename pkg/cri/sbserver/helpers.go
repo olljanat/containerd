@@ -44,7 +44,7 @@ import (
 	"github.com/containerd/containerd/plugin"
 	"github.com/containerd/containerd/runtime/linux/runctypes"
 
-	runhcsoptions "github.com/Microsoft/hcsshim/cmd/containerd-shim-runhcs-v1/options"
+	// runhcsoptions "github.com/Microsoft/hcsshim/cmd/containerd-shim-runhcs-v1/options"
 	imagedigest "github.com/opencontainers/go-digest"
 	"github.com/pelletier/go-toml"
 	runtime "k8s.io/cri-api/pkg/apis/runtime/v1"
@@ -406,7 +406,8 @@ func getRuntimeOptionsType(t string) interface{} {
 	case plugin.RuntimeLinuxV1:
 		return &runctypes.RuncOptions{}
 	case runtimeRunhcsV1:
-		return &runhcsoptions.Options{}
+		// return &runhcsoptions.Options{}
+		return &runcoptions.Options{}
 	default:
 		return &runtimeoptions.Options{}
 	}
