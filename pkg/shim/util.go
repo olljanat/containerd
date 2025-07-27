@@ -55,17 +55,7 @@ func Command(ctx context.Context, config *CommandConfig) (*exec.Cmd, error) {
 	if err != nil {
 		return nil, err
 	}
-	self, err := os.Executable()
-	if err != nil {
-		return nil, err
-	}
-	args := []string{
-		"-namespace", ns,
-		"-address", config.Address,
-		"-publish-binary", self,
-	}
-	args = append(args, config.Args...)
-	cmd := exec.CommandContext(ctx, config.Runtime, args...)
+	cmd := exec.CommandContext(ctx, config.Runtime, config.Args...)
 	cmd.Dir = config.Path
 	cmd.Env = append(
 		os.Environ(),
